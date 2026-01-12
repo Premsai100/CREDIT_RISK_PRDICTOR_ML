@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Credit Risk Prediction</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 600px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #eef;
+      border-radius: 4px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Credit Risk Prediction</h2>
+
+  <form id="creditForm">
+
+    <label>Age</label>
+    <input type="number" id="age" required>
+
+    <label>Sex</label>
+    <select id="sex">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label>Job</label>
+    <select id="job">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+
+    <label>Housing</label>
+    <select id="housing">
+      <option value="own">Own</option>
+      <option value="rent">Rent</option>
+      <option value="free">Free</option>
+    </select>
+
+    <label>Saving Accounts</label>
+    <select id="saving">
+      <option value="">None</option>
+      <option value="little">Little</option>
+      <option value="moderate">Moderate</option>
+      <option value="rich">Rich</option>
+      <option value="quite rich">Quite Rich</option>
+    </select>
+
+    <label>Checking Account</label>
+    <select id="checking">
+      <option value="">None</option>
+      <option value="little">Little</option>
+      <option value="moderate">Moderate</option>
+      <option value="rich">Rich</option>
+    </select>
+
+    <label>Credit Amount</label>
+    <input type="number" id="creditAmount" required>
+
+    <label>Duration (months)</label>
+    <input type="number" id="duration" required>
+
+    <label>Purpose</label>
+    <select id="purpose">
+      <option value="radio/TV">Radio/TV</option>
+      <option value="education">Education</option>
+      <option value="car">Car</option>
+      <option value="furniture/equipment">Furniture/Equipment</option>
+      <option value="business">Business</option>
+    </select>
+
+    <button type="submit">Predict Credit Risk</button>
+  </form>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  document.getElementById("creditForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const payload = {
+      Age: Number(document.getElementById("age").value),
+      Sex: document.getElementById("sex").value,
+      Job: Number(document.getElementById("job").value),
+      Housing: document.getElementById("housing").value,
+      "Saving accounts": document.getElementById("saving").value || null,
+      "Checking account": document.getElementById("checking").value || null,
+      "Credit amount": Number(document.getElementById("creditAmount").value),
+      Duration: Number(document.getElementById("duration").value),
+      Purpose: document.getElementById("purpose").value
+    };
+
+    try {
+      const response = await fetch("/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Prediction failed");
+      }
+
+      const result = await response.json();
+
+      const riskText =
+        result.prediction === 1 ? "High Credit Risk" : "Low Credit Risk";
+
+      document.getElementById("result").innerText =
+        "Predicted Credit Risk: " + riskText;
+
+    } catch (error) {
+      console.error(error);
+      document.getElementById("result").innerText =
+        "Error predicting credit risk";
+    }
+  });
+</script>
+
+
+</body>
+</html>
